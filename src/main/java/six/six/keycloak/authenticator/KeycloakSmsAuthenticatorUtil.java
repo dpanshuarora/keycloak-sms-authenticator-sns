@@ -16,6 +16,7 @@ import six.six.gateway.Gateways;
 import six.six.gateway.SMSService;
 import six.six.gateway.aws.snsclient.SnsNotificationService;
 import six.six.gateway.govuk.notify.NotifySMSService;
+import six.six.gateway.kaleyra.KaleyraSmsService;
 import six.six.gateway.lyrasms.LyraSMSService;
 import six.six.keycloak.EnvSubstitutor;
 import six.six.keycloak.KeycloakSmsConstants;
@@ -195,6 +196,9 @@ public class KeycloakSmsAuthenticatorUtil {
                     break;
                 case GOVUK_NOTIFY:
                     smsService = new NotifySMSService(notifyApiKey, notifyTemplate);
+                    break;
+                case KALEYRA_SMS:
+                    smsService=new KaleyraSmsService();
                     break;
                 default:
                     smsService = new SnsNotificationService();
