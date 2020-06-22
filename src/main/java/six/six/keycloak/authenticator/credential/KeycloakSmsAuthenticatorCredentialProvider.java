@@ -18,12 +18,13 @@ import java.util.Set;
 /**
  * Created by nickpack on 09/08/2017.
  */
-public class KeycloakSmsAuthenticatorCredentialProvider implements CredentialProvider, CredentialInputValidator, CredentialInputUpdater, OnUserCache {
+public class KeycloakSmsAuthenticatorCredentialProvider extends OTPCredentialProvider implements CredentialInputValidator, CredentialInputUpdater, OnUserCache {
     private static final String CACHE_KEY = KeycloakSmsAuthenticatorCredentialProvider.class.getName() + "." + KeycloakSmsConstants.USR_CRED_MDL_SMS_CODE;
 
     private final KeycloakSession session;
 
     public KeycloakSmsAuthenticatorCredentialProvider(KeycloakSession session) {
+        super(session);
         this.session = session;
     }
 
