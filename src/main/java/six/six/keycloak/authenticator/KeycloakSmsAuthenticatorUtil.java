@@ -1,10 +1,6 @@
 package six.six.keycloak.authenticator;
 
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.RequiredActionContext;
@@ -174,7 +170,9 @@ public class KeycloakSmsAuthenticatorUtil {
         String notifyTemplate = System.getenv(KeycloakSmsConstants.NOTIFY_TEMPLATE_ID);
 
         // Create the SMS message body
-        String template = getMessage(context, KeycloakSmsConstants.CONF_PRP_SMS_TEXT);
+        String template = "%sms-code% is the otp for %phonenumber% to login";
+        //TODO fix hardcoded template
+
         String smsText = createMessage(template, code, mobileNumber);
 
         boolean result;
@@ -195,7 +193,7 @@ public class KeycloakSmsAuthenticatorUtil {
                     smsService = new SnsNotificationService();
             }
 
-            result=smsService.send(checkMobileNumber(setDefaultCountryCodeIfZero(mobileNumber, getMessage(context, KeycloakSmsConstants.MSG_MOBILE_PREFIX_DEFAULT), getMessage(context, KeycloakSmsConstants.MSG_MOBILE_PREFIX_CONDITION))), smsText, smsUsr, smsPwd);
+            result=smsService.send(mobileNumber, smsText, smsUsr, smsPwd);
           return result;
        } catch(Exception e) {
             logger.error("Fail to send SMS " ,e );

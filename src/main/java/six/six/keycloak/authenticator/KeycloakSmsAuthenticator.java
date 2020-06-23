@@ -60,12 +60,8 @@ public class KeycloakSmsAuthenticator implements Authenticator {
         UserModel user = context.getUser();
         AuthenticatorConfigModel config = context.getAuthenticatorConfig();
 
-        boolean onlyForVerification=KeycloakSmsAuthenticatorUtil.getConfigBoolean(config, KeycloakSmsConstants.MOBILE_VERIFICATION_ENABLED);
-
         String mobileNumber =getMobileNumber(user);
-        String mobileNumberVerified = getMobileNumberVerified(user);
 
-        if (onlyForVerification==false || isOnlyForVerificationMode(onlyForVerification, mobileNumber,mobileNumberVerified)){
             if (mobileNumber != null) {
                 // The mobile number is configured --> send an SMS
                 long nrOfDigits = KeycloakSmsAuthenticatorUtil.getConfigLong(config, KeycloakSmsConstants.CONF_PRP_SMS_CODE_LENGTH, 8L);
@@ -89,24 +85,11 @@ public class KeycloakSmsAuthenticator implements Authenticator {
                     context.failureChallenge(AuthenticationFlowError.INTERNAL_ERROR, challenge);
                 }
             } else {
-                boolean isAskingFor=KeycloakSmsAuthenticatorUtil.getConfigBoolean(config, KeycloakSmsConstants.MOBILE_ASKFOR_ENABLED);
-                if(isAskingFor){
-                    //Enable access and ask for mobilenumber
-                    user.addRequiredAction(KeycloakSmsMobilenumberRequiredAction.PROVIDER_ID);
-                    context.success();
-                }else {
-                    // The mobile number is NOT configured --> complain
                     Response challenge = context.form()
-                            .setError("sms-auth.not.mobile")
+                            .setError("Mobile Number Not Set")
                             .createForm("sms-validation-error.ftl");
-                    context.failureChallenge(AuthenticationFlowError.CLIENT_CREDENTIALS_SETUP_REQUIRED, challenge);
-                }
+                    context.failure(AuthenticationFlowError.INTERNAL_ERROR, challenge);
             }
-        }else{
-            logger.debug("Skip SMS code because onlyForVerification " + onlyForVerification + " or  mobileNumber==mobileNumberVerified");
-            context.success();
-
-        }
     }
 
     @Override
